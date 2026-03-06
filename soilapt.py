@@ -90,7 +90,7 @@ def check_soil_suitability(geojson_path, soil_shapefile):
 
     if total_area == 0:
         return {
-            "message": "A área resultante do talhão é zero após o recorte."
+            "message": "The resultant area of the field is zero after the clip."
         }
 
     clipped["classe_apt_num"] = pd.to_numeric(
