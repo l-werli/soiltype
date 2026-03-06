@@ -1,0 +1,2 @@
+geopandas >= 1.1.2
+pandas >= 3.0.1
