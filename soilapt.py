@@ -8,7 +8,7 @@ def check_soil_suitability(geojson_path, soil_shapefile):
     soil_columns = ["legenda", "legenda_ap", "classe_apt", "geometry"]
     soils = gpd.read_file(soil_shapefile, columns=soil_columns)
 
-    soils = soils.to_crs("5880")
+    soils = soils.to_crs(field.crs)
 
     intersection = gpd.overlay(field, soils, how="intersection")
 
@@ -17,7 +17,8 @@ def check_soil_suitability(geojson_path, soil_shapefile):
             "suitable": False,
             "message": "No soil data found"
         }
-
+    # make sure that the crs is projected and not geographic
+    intersection = intersection.to_crs(5880)
     intersection["area"] = intersection.geometry.area
 
     area_by_class = (
@@ -26,19 +27,20 @@ def check_soil_suitability(geojson_path, soil_shapefile):
         .sum()
         .sort_values(ascending=False)
     )
-
+    # define for integer to prevent false detection of another class if the value is float
     dominant_class = int(area_by_class.index[0])
 
     suitable = dominant_class in {1, 2, 3}
-    if suitable == true
-        print(" O [Dominant_soil] é adequado para plantio")
-    else: print(Este solo não é adequado para plantio)
 
     dominant_soil = intersection.loc[
-        intersection["classe"] == dominant_class,
+        intersection["classe_apt"] == dominant_class,
         "legenda"
     ].iloc[0]
 
+    if suitable:
+        print(f"The {dominant_soil} is not suitable to have crops")
+    else: print(f"The {dominant_soil} is not prepaired to have a crop")
+    
     return {
         "dominant_class": int(dominant_class),
         "dominant_soil": dominant_soil,
