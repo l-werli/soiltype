@@ -36,7 +36,7 @@ def split_soil_legend(legend_value):
     return legend_value, legend_value
 
 
-def check_soil_suitability_fast(geojson_path, soil_shapefile):
+def check_soil_suitability(geojson_path, soil_shapefile):
     """
     Check if a farmer's field is suitable for agriculture based on
     EMBRAPA soil suitability classes.
@@ -53,7 +53,7 @@ def check_soil_suitability_fast(geojson_path, soil_shapefile):
             "message": "The provided GeoJSON is empty."
         }
 
-    soil_columns = ["legenda", "classe_apt", "geometry"]
+    soil_columns = ["legenda", "legenda_ap", "classe_apt", "geometry"]
     soils = gpd.read_file(soil_shapefile, columns=soil_columns, encoding="latin1")
 
     if soils.empty:
@@ -73,14 +73,14 @@ def check_soil_suitability_fast(geojson_path, soil_shapefile):
 
     if candidate_soils.empty:
         return {
-            "message": "Nenhum dado de solo encontrado para esta área."
+            "message": "No soil data was found for this area."
         }
 
     clipped = gpd.clip(candidate_soils, field)
 
     if clipped.empty:
         return {
-            "message": "Nenhum dado de solo encontrado para esta área."
+            "message": "No soil data was found for this area."
         }
 
     clipped = clipped.to_crs(5880)
@@ -178,6 +178,6 @@ if __name__ == "__main__":
     geojson = "poligono2084.geojson"
     soil_shp = "aptagr_bra.shp"
 
-    result = check_soil_suitability_fast(geojson, soil_shp)
+    result = check_soil_suitability(geojson, soil_shp)
 
     print(result)
